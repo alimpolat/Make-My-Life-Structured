@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "gbrain": {
+      "command": "bun",
+      "args": ["run", "C:/Users/alimp/gbrain/src/cli.ts", "serve"],
+      "env": {}
+    }
+  }
+}

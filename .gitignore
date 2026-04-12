@@ -1,0 +1,6 @@
+# Local settings (permissions, machine-specific config)
+.claude/settings.local.json
+
+# OS files
+.DS_Store
+Thumbs.db
