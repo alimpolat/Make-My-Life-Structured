@@ -1,6 +1,11 @@
 # Local settings (permissions, machine-specific config)
 .claude/settings.local.json
 
+# Credentials (NEVER commit)
+*.json
+!package.json
+!tsconfig.json
+
 # OS files
 .DS_Store
 Thumbs.db
