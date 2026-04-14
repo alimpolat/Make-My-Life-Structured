@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Marcus — Tonight's Workout</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #eee;
+  padding: 16px;
+  padding-bottom: 90px;
+  -webkit-text-size-adjust: 100%;
+}
+h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.subtitle { color: #888; font-size: 14px; margin-bottom: 20px; }
+.phase-badge {
+  display: inline-block;
+  background: #1a3a1a;
+  color: #6fcf6f;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f59e0b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 28px 0 12px 0;
+}
+
+/* Exercise Card */
+.exercise-card {
+  background: #141414;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  border: 1px solid #222;
+  transition: opacity 0.3s;
+}
+.exercise-card.done { opacity: 0.4; }
+.exercise-card.grip { border-left: 3px solid #f59e0b; }
+.exercise-card.warmup, .exercise-card.cooldown {
+  border-left: 3px solid #22c55e;
+  background: #0f1a0f;
+}
+.card-header {
+  padding: 14px 16px 10px;
+  cursor: pointer;
+}
+.exercise-num {
+  font-size: 11px;
+  color: #555;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.exercise-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.exercise-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+.done-badge {
+  background: #22c55e;
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 8px;
+  display: none;
+}
+.exercise-card.done .done-badge { display: inline-block; }
+
+.exercise-stats {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0;
+}
+.stat {
+  background: #1e1e1e;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #aaa;
+}
+.stat strong { color: #fff; font-size: 15px; }
+
+/* Expandable detail section */
+.card-detail {
+  display: none;
+  padding: 0 16px 16px;
+}
+.card-detail.open { display: block; }
+
+/* Exercise image */
+.exercise-img-container {
+  background: #1a1a1a;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.exercise-img-container img {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+.no-img {
+  color: #555;
+  font-size: 13px;
+  padding: 30px 0;
+}
+
+/* Muscle diagrams */
+.muscle-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.muscle-diagram {
+  width: 80px;
+  height: 100px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.muscle-diagram img { width: 100%; height: 100%; object-fit: contain; }
+.muscle-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.muscle-tag {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 8px;
+  display: inline-block;
+}
+.muscle-tag.primary { background: #2a1a3a; color: #b78bdb; }
+.muscle-tag.secondary { background: #1a2a2a; color: #6bb8b8; }
+
+.exercise-where {
+  font-size: 13px;
+  color: #6b9bd2;
+  margin: 8px 0;
+  line-height: 1.5;
+  padding: 10px;
+  background: #111828;
+  border-radius: 8px;
+}
+.exercise-where::before { content: "📍 "; }
+.exercise-note {
+  font-size: 13px;
+  color: #999;
+  margin-top: 6px;
+  font-style: italic;
+  line-height: 1.5;
+}
+.tap-hint {
+  font-size: 11px;
+  color: #444;
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* Marcus bubble */
+.marcus-says {
+  background: #141428;
+  border-radius: 14px;
+  padding: 16px;
+  margin: 20px 0;
+  border: 1px solid #2a2a4a;
+}
+.marcus-says .name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #8b5cf6;
+  margin-bottom: 6px;
+}
+.marcus-says p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #ccc;
+}
+
+.checklist { list-style: none; padding: 0; }
+.checklist li {
+  font-size: 14px;
+  color: #ccc;
+  padding: 10px 0;
+  border-bottom: 1px solid #1a1a1a;
+  line-height: 1.5;
+}
+.checklist li::before { content: "  "; margin-right: 8px; }
+
+/* Timer */
+.timer-btn {
+  display: block;
+  width: calc(100% - 32px);
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  text-align: center;
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+}
+.timer-btn:active { background: #2563eb; transform: scale(0.98); }
+.timer-btn.resting {
+  background: #dc2626;
+  box-shadow: 0 4px 20px rgba(220,38,38,0.3);
+  animation: pulse 1s infinite;
+}
+.timer-btn.go {
+  background: #22c55e;
+  box-shadow: 0 4px 20px rgba(34,197,94,0.3);
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+</style>
+</head>
+<body>
+
+<span class="phase-badge">Phase 1 — Week 1</span>
+<h1>Strength A: Push + Core</h1>
+<p class="subtitle">Monday &bull; Friskis&Svettis Sundbyberg or Solna</p>
+
+<div class="marcus-says">
+  <div class="name">Coach Marcus</div>
+  <p>First session. Go light — the last rep should feel like "I could do 2-3 more." Learn the movements. Feel where the muscles work. The weight goes up next week. Tonight you just show up and move. That's the win, brother.</p>
+</div>
+
+<!-- WARM UP -->
+<div class="section-title">Warm Up — 5 min</div>
+<div class="exercise-card warmup">
+  <div class="card-header">
+    <div class="exercise-name">Warm Up Routine</div>
+  </div>
+  <div class="card-detail open">
+    <ul class="checklist">
+      <li>3 min bike or cross-trainer (light pace)</li>
+      <li>10 bodyweight squats</li>
+      <li>10 arm circles each direction</li>
+      <li>10 hip circles each direction</li>
+      <li>1 easy set of goblet squats at half weight</li>
+    </ul>
+  </div>
+</div>
+
+<!-- EXERCISE 1 -->
+<div class="section-title">Main Workout</div>
+
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 1 of 7</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Goblet Squat</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>12</strong> reps</span>
+      <span class="stat"><strong>60s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <img src="https://wger.de/media/exercise-images/203/300a44ac-4368-48e2-8b18-beea32ab915d.gif" alt="Goblet Squat" loading="lazy">
+    </div>
+    <div class="muscle-row">
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-10.b1445ea1acf6.svg" alt="Quads"></div>
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-8.fbdfb46f3bc0.svg" alt="Glutes"></div>
+      <div class="muscle-tags">
+        <span class="muscle-tag primary">Quads</span>
+        <span class="muscle-tag primary">Glutes</span>
+        <span class="muscle-tag secondary">Core</span>
+      </div>
+    </div>
+    <div class="exercise-where">Free weights area — grab a dumbbell from the rack (start 10-14 kg)</div>
+    <div class="exercise-note">Hold dumbbell at your chest with both hands. Squat down until thighs are parallel to floor. Keep chest up, knees tracking over toes. Push through heels to stand.</div>
+    <br>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)" style="width:100%;padding:12px;background:#1a3a1a;color:#6fcf6f;border:1px solid #2a5a2a;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 2 -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 2 of 7</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Dumbbell Bench Press</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>10</strong> reps</span>
+      <span class="stat"><strong>60s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <img src="https://wger.de/media/exercise-images/1676/ac441fa8-cf11-45a5-9633-18ae49fb9320.webp" alt="Dumbbell Bench Press" loading="lazy">
+    </div>
+    <div class="muscle-row">
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-4.c9fa9a228bc8.svg" alt="Chest"></div>
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-2.e1e1205a3202.svg" alt="Shoulders"></div>
+      <div class="muscle-tags">
+        <span class="muscle-tag primary">Chest</span>
+        <span class="muscle-tag secondary">Shoulders</span>
+        <span class="muscle-tag secondary">Triceps</span>
+      </div>
+    </div>
+    <div class="exercise-where">Free weights area — flat bench + dumbbells (start 10-12 kg each hand)</div>
+    <div class="exercise-note">Lie on flat bench, feet on floor. Hold dumbbells above chest, arms extended. Lower slowly (2 seconds down) until elbows are at 90 degrees. Press back up (1 second). Keep your back flat, don't arch.</div>
+    <br>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)" style="width:100%;padding:12px;background:#1a3a1a;color:#6fcf6f;border:1px solid #2a5a2a;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 3 -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 3 of 7</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Dumbbell Shoulder Press</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>10</strong> reps</span>
+      <span class="stat"><strong>60s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <img src="https://wger.de/media/exercise-images/203/1c052351-2af0-4227-aeb0-244008e4b0a8.jpeg" alt="Shoulder Press reference" loading="lazy">
+      <div style="font-size:11px;color:#555;margin-top:4px">Similar movement — seated, pressing dumbbells overhead</div>
+    </div>
+    <div class="muscle-row">
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-2.e1e1205a3202.svg" alt="Shoulders"></div>
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-5.8a2b934b5486.svg" alt="Triceps"></div>
+      <div class="muscle-tags">
+        <span class="muscle-tag primary">Shoulders (Deltoids)</span>
+        <span class="muscle-tag secondary">Triceps</span>
+      </div>
+    </div>
+    <div class="exercise-where">Adjustable bench set to 90 degrees + dumbbells (start 8-10 kg each hand)</div>
+    <div class="exercise-note">Sit on bench with back support at 90 degrees. Hold dumbbells at shoulder height, palms facing forward. Press straight up until arms are fully extended. Lower slowly back to shoulders. Don't arch your back.</div>
+    <br>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)" style="width:100%;padding:12px;background:#1a3a1a;color:#6fcf6f;border:1px solid #2a5a2a;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 4 -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 4 of 7</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Cable Tricep Pushdown</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>12</strong> reps</span>
+      <span class="stat"><strong>45s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <img src="https://wger.de/media/exercise-images/1185/c5ca283d-8958-4fd8-9d59-a3f52a3ac66b.jpg" alt="Tricep Pushdown" loading="lazy">
+    </div>
+    <div class="muscle-row">
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-5.8a2b934b5486.svg" alt="Triceps"></div>
+      <div class="muscle-tags">
+        <span class="muscle-tag primary">Triceps</span>
+      </div>
+    </div>
+    <div class="exercise-where">Cable station — attach rope or straight bar to the high cable pulley</div>
+    <div class="exercise-note">Stand facing the cable machine. Grip the rope/bar with both hands. Keep elbows pinned to your sides — they don't move. Push down until arms are straight. Squeeze at the bottom for 1 second. Slowly let it back up. Only your forearms move.</div>
+    <br>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)" style="width:100%;padding:12px;background:#1a3a1a;color:#6fcf6f;border:1px solid #2a5a2a;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 5 -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 5 of 7</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Plank</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>30-45s</strong> hold</span>
+      <span class="stat"><strong>30s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <img src="https://wger.de/media/exercise-images/458/b7bd9c28-9f1d-4647-bd17-ab6a3adf5770.png" alt="Plank" loading="lazy">
+    </div>
+    <div class="muscle-row">
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-6.592f938fa8c7.svg" alt="Abs"></div>
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-2.e1e1205a3202.svg" alt="Shoulders"></div>
+      <div class="muscle-tags">
+        <span class="muscle-tag primary">Abs / Core</span>
+        <span class="muscle-tag secondary">Shoulders</span>
+        <span class="muscle-tag secondary">Glutes</span>
+      </div>
+    </div>
+    <div class="exercise-where">Functional area — grab a mat from the rack</div>
+    <div class="exercise-note">Get on the floor on your forearms and toes. Body forms a straight line from head to heels — like a plank of wood. Squeeze your abs and glutes tight. Don't let your hips sag or pike up. Look at the floor. Breathe normally. Hold.</div>
+    <br>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)" style="width:100%;padding:12px;background:#1a3a1a;color:#6fcf6f;border:1px solid #2a5a2a;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">Mark Done</button>
+  </div>
+</div>
+
+<!-- GRIP PROTOCOL -->
+<div class="section-title">Grip Strength Protocol</div>
+
+<!-- EXERCISE 6 -->
+<div class="exercise-card grip" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 6 of 7 — Grip Builder</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Dead Hang</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>20-30s</strong> hang</span>
+      <span class="stat"><strong>30s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <svg viewBox="0 0 200 280" width="140" style="margin:0 auto;display:block">
+        <!-- Simple dead hang illustration -->
+        <rect x="80" y="0" width="40" height="8" rx="4" fill="#444" /><!-- bar -->
+        <!-- hands -->
+        <rect x="82" y="6" width="12" height="16" rx="3" fill="#c4956a"/>
+        <rect x="106" y="6" width="12" height="16" rx="3" fill="#c4956a"/>
+        <!-- arms -->
+        <line x1="88" y1="22" x2="88" y2="70" stroke="#c4956a" stroke-width="8" stroke-linecap="round"/>
+        <line x1="112" y1="22" x2="112" y2="70" stroke="#c4956a" stroke-width="8" stroke-linecap="round"/>
+        <!-- head -->
+        <circle cx="100" cy="82" r="16" fill="#c4956a"/>
+        <!-- torso -->
+        <rect x="82" y="98" width="36" height="60" rx="8" fill="#3b82f6"/>
+        <!-- legs -->
+        <line x1="90" y1="158" x2="88" y2="240" stroke="#1e3a5f" stroke-width="10" stroke-linecap="round"/>
+        <line x1="110" y1="158" x2="112" y2="240" stroke="#1e3a5f" stroke-width="10" stroke-linecap="round"/>
+        <!-- feet -->
+        <ellipse cx="88" cy="248" rx="8" ry="6" fill="#333"/>
+        <ellipse cx="112" cy="248" rx="8" ry="6" fill="#333"/>
+        <!-- highlight forearms -->
+        <line x1="88" y1="22" x2="88" y2="50" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" opacity="0.3"/>
+        <line x1="112" y1="22" x2="112" y2="50" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" opacity="0.3"/>
+      </svg>
+      <div style="font-size:11px;color:#f59e0b;margin-top:8px">Forearms highlighted — this builds your grip</div>
+    </div>
+    <div class="muscle-row">
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-13.3fd85231b089.svg" alt="Forearms"></div>
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-2.e1e1205a3202.svg" alt="Shoulders"></div>
+      <div class="muscle-tags">
+        <span class="muscle-tag primary">Forearms / Grip</span>
+        <span class="muscle-tag secondary">Shoulders</span>
+        <span class="muscle-tag secondary">Lats</span>
+      </div>
+    </div>
+    <div class="exercise-where">Pull-up bar in free weights area or cable machine frame</div>
+    <div class="exercise-note">Grab the bar with both hands, shoulder-width apart. Let your body hang. Relax your shoulders — don't shrug. Squeeze your hands as hard as you can. Breathe. Hold as long as possible. This directly targets your grip weakness (40 kg — target 47+).</div>
+    <br>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)" style="width:100%;padding:12px;background:#332a1a;color:#f59e0b;border:1px solid #5a4a2a;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 7 -->
+<div class="exercise-card grip" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 7 of 7 — Grip Builder</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Farmer's Walk</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>30m</strong> walk</span>
+      <span class="stat"><strong>45s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <svg viewBox="0 0 240 260" width="160" style="margin:0 auto;display:block">
+        <!-- Simple farmer's walk illustration -->
+        <!-- head -->
+        <circle cx="120" cy="30" r="18" fill="#c4956a"/>
+        <!-- torso -->
+        <rect x="100" y="48" width="40" height="65" rx="8" fill="#3b82f6"/>
+        <!-- arms holding dumbbells -->
+        <line x1="100" y1="55" x2="60" y2="120" stroke="#c4956a" stroke-width="8" stroke-linecap="round"/>
+        <line x1="140" y1="55" x2="180" y2="120" stroke="#c4956a" stroke-width="8" stroke-linecap="round"/>
+        <!-- dumbbells -->
+        <rect x="45" y="115" width="30" height="14" rx="4" fill="#666"/>
+        <rect x="165" y="115" width="30" height="14" rx="4" fill="#666"/>
+        <!-- dumbbell weight plates -->
+        <rect x="42" y="112" width="8" height="20" rx="2" fill="#888"/>
+        <rect x="72" y="112" width="8" height="20" rx="2" fill="#888"/>
+        <rect x="162" y="112" width="8" height="20" rx="2" fill="#888"/>
+        <rect x="192" y="112" width="8" height="20" rx="2" fill="#888"/>
+        <!-- legs walking -->
+        <line x1="110" y1="113" x2="95" y2="200" stroke="#1e3a5f" stroke-width="10" stroke-linecap="round"/>
+        <line x1="130" y1="113" x2="145" y2="200" stroke="#1e3a5f" stroke-width="10" stroke-linecap="round"/>
+        <!-- feet -->
+        <ellipse cx="90" cy="208" rx="10" ry="6" fill="#333"/>
+        <ellipse cx="150" cy="208" rx="10" ry="6" fill="#333"/>
+        <!-- grip highlight -->
+        <circle cx="60" cy="122" r="14" fill="#f59e0b" opacity="0.2"/>
+        <circle cx="180" cy="122" r="14" fill="#f59e0b" opacity="0.2"/>
+        <!-- 16 kg labels -->
+        <text x="60" y="148" fill="#f59e0b" font-size="11" text-anchor="middle" font-weight="600">16 kg</text>
+        <text x="180" y="148" fill="#f59e0b" font-size="11" text-anchor="middle" font-weight="600">16 kg</text>
+        <!-- arrow showing walking direction -->
+        <text x="120" y="245" fill="#555" font-size="11" text-anchor="middle">Walk slowly 30m ></text>
+      </svg>
+    </div>
+    <div class="muscle-row">
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-13.3fd85231b089.svg" alt="Forearms"></div>
+      <div class="muscle-diagram"><img src="https://wger.de/static/images/muscles/main/muscle-9.b491050a7108.svg" alt="Traps"></div>
+      <div class="muscle-tags">
+        <span class="muscle-tag primary">Forearms / Grip</span>
+        <span class="muscle-tag primary">Traps</span>
+        <span class="muscle-tag secondary">Core</span>
+        <span class="muscle-tag secondary">Shoulders</span>
+      </div>
+    </div>
+    <div class="exercise-where">Grab heavy dumbbells (start 16 kg each hand), walk the gym floor slowly</div>
+    <div class="exercise-note">Pick up the heaviest dumbbells you can hold. Stand tall — chest up, shoulders back. Walk slowly in a straight line for about 30 meters. Crush the handles as hard as you can. Don't rush. Sundbyberg's open layout is great for this.</div>
+    <br>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)" style="width:100%;padding:12px;background:#332a1a;color:#f59e0b;border:1px solid #5a4a2a;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">Mark Done</button>
+  </div>
+</div>
+
+<!-- COOL DOWN -->
+<div class="section-title">Cool Down — 5 min</div>
+<div class="exercise-card cooldown">
+  <div class="card-header">
+    <div class="exercise-name">Cool Down Stretches</div>
+  </div>
+  <div class="card-detail open">
+    <ul class="checklist">
+      <li>2 min easy walk on treadmill</li>
+      <li>Quad stretch — 30s each leg (pull foot to butt)</li>
+      <li>Hamstring stretch — 30s each leg (foot on bench, lean forward)</li>
+      <li>Chest stretch — arm on wall, turn away, 30s each side</li>
+      <li>Dead hang — 20s (bonus grip + spine decompression)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="marcus-says">
+  <div class="name">Coach Marcus</div>
+  <p>Water between every exercise. If you can't find equipment, ask Friskis staff — they're helpful. No ego lifting. Nobody in the gym cares what weight you use. They care that you showed up. Now go, brother.</p>
+</div>
+
+<div style="height:20px"></div>
+
+<!-- Timer button -->
+<button class="timer-btn" id="timerBtn" onclick="handleTimer()">Rest Timer — Tap to Start</button>
+
+<script>
+// Timer
+let timerInterval = null;
+let seconds = 0;
+
+function handleTimer() {
+  const btn = document.getElementById('timerBtn');
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    btn.textContent = 'Rest Timer — Tap to Start';
+    btn.className = 'timer-btn';
+    return;
+  }
+  seconds = 60;
+  btn.className = 'timer-btn resting';
+  btn.textContent = seconds + 's — resting...';
+  timerInterval = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      btn.textContent = 'GO! Next set — tap to reset';
+      btn.className = 'timer-btn go';
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+    } else {
+      btn.textContent = seconds + 's — resting...';
+    }
+  }, 1000);
+}
+
+// Expand/collapse exercise cards
+function toggleCard(card) {
+  const detail = card.querySelector('.card-detail');
+  if (detail) {
+    detail.classList.toggle('open');
+  }
+}
+
+// Mark done
+function markDone(btn) {
+  const card = btn.closest('.exercise-card');
+  card.classList.toggle('done');
+  if (card.classList.contains('done')) {
+    btn.textContent = 'Undo';
+    btn.style.background = '#1a1a1a';
+    btn.style.color = '#666';
+    btn.style.borderColor = '#333';
+    // Collapse the card
+    const detail = card.querySelector('.card-detail');
+    if (detail) detail.classList.remove('open');
+  } else {
+    btn.textContent = 'Mark Done';
+    btn.style.background = card.classList.contains('grip') ? '#332a1a' : '#1a3a1a';
+    btn.style.color = card.classList.contains('grip') ? '#f59e0b' : '#6fcf6f';
+    btn.style.borderColor = card.classList.contains('grip') ? '#5a4a2a' : '#2a5a2a';
+  }
+}
+</script>
+
+</body>
+</html>
