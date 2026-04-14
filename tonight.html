@@ -103,6 +103,35 @@ h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
 }
 .card-detail.collapsed { display: none; }
 
+/* Animated two-frame exercise images */
+.exercise-anim {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+.exercise-anim img {
+  width: 100%;
+  border-radius: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.exercise-anim img:first-child {
+  position: relative;
+}
+.exercise-anim img.frame-0 {
+  animation: frameBlink 2s infinite;
+}
+.exercise-anim img.frame-1 {
+  animation: frameBlink 2s infinite reverse;
+}
+@keyframes frameBlink {
+  0%, 45% { opacity: 1; }
+  50%, 95% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 /* Exercise image */
 .exercise-img-container {
   background: #1a1a1a;
@@ -327,7 +356,7 @@ h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
   </div>
   <div class="card-detail">
     <div class="exercise-img-container">
-      <img src="https://alimpolat.github.io/Make-My-Life-Structured/img/bench-press.webp" alt="Dumbbell Bench Press" loading="lazy">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/bench-press-0.jpg" alt="Dumbbell Bench Press start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/bench-press-1.jpg" alt="Dumbbell Bench Press end"></div>
     </div>
     <div class="muscle-row">
       <div class="muscle-diagram"><img src="https://alimpolat.github.io/Make-My-Life-Structured/img/muscle-chest.svg" alt="Chest"></div>
@@ -362,7 +391,7 @@ h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
   </div>
   <div class="card-detail">
     <div class="exercise-img-container">
-      <img src="https://alimpolat.github.io/Make-My-Life-Structured/img/goblet-squat.gif" alt="Shoulder Press — similar pressing motion" loading="lazy">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/shoulder-press-0.jpg" alt="Shoulder Press start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/shoulder-press-1.jpg" alt="Shoulder Press end"></div>
       <div style="font-size:11px;color:#555;margin-top:4px">Similar movement — seated, pressing dumbbells overhead</div>
     </div>
     <div class="muscle-row">
@@ -397,7 +426,7 @@ h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
   </div>
   <div class="card-detail">
     <div class="exercise-img-container">
-      <img src="https://alimpolat.github.io/Make-My-Life-Structured/img/tricep-pushdown.jpg" alt="Tricep Pushdown" loading="lazy">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/tricep-pushdown-0.jpg" alt="Tricep Pushdown start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/tricep-pushdown-1.jpg" alt="Tricep Pushdown end"></div>
     </div>
     <div class="muscle-row">
       <div class="muscle-diagram"><img src="https://alimpolat.github.io/Make-My-Life-Structured/img/muscle-triceps.svg" alt="Triceps"></div>
@@ -429,7 +458,7 @@ h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
   </div>
   <div class="card-detail">
     <div class="exercise-img-container">
-      <img src="https://alimpolat.github.io/Make-My-Life-Structured/img/plank.png" alt="Plank" loading="lazy">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/plank-0.jpg" alt="Plank start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/plank-1.jpg" alt="Plank end"></div>
     </div>
     <div class="muscle-row">
       <div class="muscle-diagram"><img src="https://alimpolat.github.io/Make-My-Life-Structured/img/muscle-abs.svg" alt="Abs"></div>
@@ -467,29 +496,7 @@ h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
   </div>
   <div class="card-detail">
     <div class="exercise-img-container">
-      <svg viewBox="0 0 200 280" width="140" style="margin:0 auto;display:block">
-        <!-- Simple dead hang illustration -->
-        <rect x="80" y="0" width="40" height="8" rx="4" fill="#444" /><!-- bar -->
-        <!-- hands -->
-        <rect x="82" y="6" width="12" height="16" rx="3" fill="#c4956a"/>
-        <rect x="106" y="6" width="12" height="16" rx="3" fill="#c4956a"/>
-        <!-- arms -->
-        <line x1="88" y1="22" x2="88" y2="70" stroke="#c4956a" stroke-width="8" stroke-linecap="round"/>
-        <line x1="112" y1="22" x2="112" y2="70" stroke="#c4956a" stroke-width="8" stroke-linecap="round"/>
-        <!-- head -->
-        <circle cx="100" cy="82" r="16" fill="#c4956a"/>
-        <!-- torso -->
-        <rect x="82" y="98" width="36" height="60" rx="8" fill="#3b82f6"/>
-        <!-- legs -->
-        <line x1="90" y1="158" x2="88" y2="240" stroke="#1e3a5f" stroke-width="10" stroke-linecap="round"/>
-        <line x1="110" y1="158" x2="112" y2="240" stroke="#1e3a5f" stroke-width="10" stroke-linecap="round"/>
-        <!-- feet -->
-        <ellipse cx="88" cy="248" rx="8" ry="6" fill="#333"/>
-        <ellipse cx="112" cy="248" rx="8" ry="6" fill="#333"/>
-        <!-- highlight forearms -->
-        <line x1="88" y1="22" x2="88" y2="50" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" opacity="0.3"/>
-        <line x1="112" y1="22" x2="112" y2="50" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" opacity="0.3"/>
-      </svg>
+      <div class="exercise-anim" style="text-align:center"><img src="https://alimpolat.github.io/Make-My-Life-Structured/img/bench-press-0.jpg" alt="Dead Hang" style="max-height:200px;opacity:0"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center"><div style="font-size:48px">🧗</div><div style="color:#f59e0b;font-size:14px;margin-top:8px">Grab bar, hang with straight arms.<br>Squeeze hands. Breathe. Hold.</div></div></div>
       <div style="font-size:11px;color:#f59e0b;margin-top:8px">Forearms highlighted — this builds your grip</div>
     </div>
     <div class="muscle-row">
@@ -525,38 +532,7 @@ h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
   </div>
   <div class="card-detail">
     <div class="exercise-img-container">
-      <svg viewBox="0 0 240 260" width="160" style="margin:0 auto;display:block">
-        <!-- Simple farmer's walk illustration -->
-        <!-- head -->
-        <circle cx="120" cy="30" r="18" fill="#c4956a"/>
-        <!-- torso -->
-        <rect x="100" y="48" width="40" height="65" rx="8" fill="#3b82f6"/>
-        <!-- arms holding dumbbells -->
-        <line x1="100" y1="55" x2="60" y2="120" stroke="#c4956a" stroke-width="8" stroke-linecap="round"/>
-        <line x1="140" y1="55" x2="180" y2="120" stroke="#c4956a" stroke-width="8" stroke-linecap="round"/>
-        <!-- dumbbells -->
-        <rect x="45" y="115" width="30" height="14" rx="4" fill="#666"/>
-        <rect x="165" y="115" width="30" height="14" rx="4" fill="#666"/>
-        <!-- dumbbell weight plates -->
-        <rect x="42" y="112" width="8" height="20" rx="2" fill="#888"/>
-        <rect x="72" y="112" width="8" height="20" rx="2" fill="#888"/>
-        <rect x="162" y="112" width="8" height="20" rx="2" fill="#888"/>
-        <rect x="192" y="112" width="8" height="20" rx="2" fill="#888"/>
-        <!-- legs walking -->
-        <line x1="110" y1="113" x2="95" y2="200" stroke="#1e3a5f" stroke-width="10" stroke-linecap="round"/>
-        <line x1="130" y1="113" x2="145" y2="200" stroke="#1e3a5f" stroke-width="10" stroke-linecap="round"/>
-        <!-- feet -->
-        <ellipse cx="90" cy="208" rx="10" ry="6" fill="#333"/>
-        <ellipse cx="150" cy="208" rx="10" ry="6" fill="#333"/>
-        <!-- grip highlight -->
-        <circle cx="60" cy="122" r="14" fill="#f59e0b" opacity="0.2"/>
-        <circle cx="180" cy="122" r="14" fill="#f59e0b" opacity="0.2"/>
-        <!-- 16 kg labels -->
-        <text x="60" y="148" fill="#f59e0b" font-size="11" text-anchor="middle" font-weight="600">16 kg</text>
-        <text x="180" y="148" fill="#f59e0b" font-size="11" text-anchor="middle" font-weight="600">16 kg</text>
-        <!-- arrow showing walking direction -->
-        <text x="120" y="245" fill="#555" font-size="11" text-anchor="middle">Walk slowly 30m ></text>
-      </svg>
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/farmer-walk-0.jpg" alt="Farmer Walk start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/farmer-walk-1.jpg" alt="Farmer Walk end"></div>
     </div>
     <div class="muscle-row">
       <div class="muscle-diagram"><img src="https://alimpolat.github.io/Make-My-Life-Structured/img/muscle-forearms.svg" alt="Forearms"></div>
