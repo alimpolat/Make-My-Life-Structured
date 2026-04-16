@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Marcus — Strength B</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #eee;
+  padding: 16px;
+  padding-bottom: 90px;
+  -webkit-text-size-adjust: 100%;
+}
+h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.subtitle { color: #888; font-size: 14px; margin-bottom: 20px; }
+.phase-badge {
+  display: inline-block;
+  background: #1a3a1a;
+  color: #6fcf6f;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f59e0b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 28px 0 12px 0;
+}
+.exercise-anim {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+.exercise-anim img {
+  width: 100%;
+  border-radius: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.exercise-anim img:first-child { position: relative; }
+.exercise-anim img.frame-0 { animation: frameBlink 2s infinite; }
+.exercise-anim img.frame-1 { animation: frameBlink 2s infinite reverse; }
+@keyframes frameBlink {
+  0%, 45% { opacity: 1; }
+  50%, 95% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.exercise-card {
+  background: #141414;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  border: 1px solid #222;
+  transition: opacity 0.3s;
+}
+.exercise-card.done { opacity: 0.4; }
+.exercise-card.grip { border-left: 3px solid #f59e0b; }
+.exercise-card.warmup, .exercise-card.cooldown {
+  border-left: 3px solid #22c55e;
+  background: #0f1a0f;
+}
+.card-header { padding: 14px 16px 10px; cursor: pointer; }
+.exercise-num { font-size: 11px; color: #555; font-weight: 600; margin-bottom: 2px; }
+.exercise-name-row { display: flex; justify-content: space-between; align-items: center; }
+.exercise-name { font-size: 18px; font-weight: 700; }
+.done-badge {
+  background: #22c55e;
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 8px;
+  display: none;
+}
+.exercise-card.done .done-badge { display: inline-block; }
+.exercise-stats { display: flex; gap: 12px; margin: 8px 0; }
+.stat {
+  background: #1e1e1e;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #aaa;
+}
+.stat strong { color: #fff; font-size: 15px; }
+.card-detail { display: block; padding: 0 16px 16px; }
+.card-detail.collapsed { display: none; }
+.exercise-img-container {
+  background: #1a1a1a;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.muscle-row { display: flex; gap: 6px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+.muscle-diagram { display: none; }
+.muscle-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.muscle-tag { font-size: 12px; padding: 3px 10px; border-radius: 8px; display: inline-block; }
+.muscle-tag.primary { background: #2a1a3a; color: #b78bdb; }
+.muscle-tag.secondary { background: #1a2a2a; color: #6bb8b8; }
+.exercise-where {
+  font-size: 13px; color: #6b9bd2; margin: 8px 0; line-height: 1.5;
+  padding: 10px; background: #111828; border-radius: 8px;
+}
+.exercise-where::before { content: "📍 "; }
+.exercise-note { font-size: 13px; color: #999; margin-top: 6px; font-style: italic; line-height: 1.5; }
+.tap-hint { font-size: 11px; color: #444; text-align: center; margin-top: 4px; }
+.marcus-says {
+  background: #141428; border-radius: 14px; padding: 16px; margin: 20px 0; border: 1px solid #2a2a4a;
+}
+.marcus-says .name { font-size: 13px; font-weight: 700; color: #8b5cf6; margin-bottom: 6px; }
+.marcus-says p { font-size: 14px; line-height: 1.7; color: #ccc; }
+.checklist { list-style: none; padding: 0; }
+.checklist li { font-size: 14px; color: #ccc; padding: 10px 0; border-bottom: 1px solid #1a1a1a; line-height: 1.5; }
+.checklist li::before { content: "  "; margin-right: 8px; }
+.mark-done-btn {
+  width: 100%; padding: 12px; background: #1a3a1a; color: #6fcf6f;
+  border: 1px solid #2a5a2a; border-radius: 10px; font-size: 15px;
+  font-weight: 600; cursor: pointer; margin-top: 8px;
+}
+.mark-done-btn.grip-btn { background: #332a1a; color: #f59e0b; border-color: #5a4a2a; }
+.timer-btn {
+  display: block; width: calc(100% - 32px); background: #3b82f6; color: #fff;
+  border: none; border-radius: 14px; padding: 16px; font-size: 18px; font-weight: 600;
+  cursor: pointer; position: fixed; bottom: 16px; left: 16px; text-align: center; z-index: 10;
+  box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+}
+.timer-btn:active { background: #2563eb; transform: scale(0.98); }
+.timer-btn.resting { background: #dc2626; box-shadow: 0 4px 20px rgba(220,38,38,0.3); animation: pulse 1s infinite; }
+.timer-btn.go { background: #22c55e; box-shadow: 0 4px 20px rgba(34,197,94,0.3); }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+.nav { display: flex; gap: 8px; margin-bottom: 16px; }
+.nav a {
+  color: #888; text-decoration: none; font-size: 13px; padding: 6px 12px;
+  background: #1a1a1a; border-radius: 8px;
+}
+.nav a.active { color: #3b82f6; background: #1a1a2e; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="tonight.html">Strength A</a>
+  <a href="strength-b.html" class="active">Strength B</a>
+</div>
+
+<span class="phase-badge">Phase 1 — Week 1</span>
+<h1>Strength B: Pull + Legs</h1>
+<p class="subtitle">Thursday, April 16 &bull; Friskis&Svettis</p>
+
+<div class="marcus-says">
+  <div class="name">Coach Marcus</div>
+  <p>Session 2. New exercises — all pulling and legs today. Same rules: go light, learn the form, last rep should feel like you've got 2-3 left. You showed up Monday. You're showing up again. That's a pattern forming, brother.</p>
+</div>
+
+<!-- WARM UP -->
+<div class="section-title">Warm Up — 5 min</div>
+<div class="exercise-card warmup">
+  <div class="card-header"><div class="exercise-name">Warm Up Routine</div></div>
+  <div class="card-detail">
+    <ul class="checklist">
+      <li>3 min bike or cross-trainer (light pace)</li>
+      <li>10 bodyweight squats</li>
+      <li>10 arm circles each direction</li>
+      <li>10 hip circles each direction</li>
+      <li>1 easy set of leg press at low weight</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-title">Main Workout</div>
+
+<!-- EXERCISE 1: Leg Press -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 1 of 8</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Leg Press</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>12</strong> reps</span>
+      <span class="stat"><strong>60s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/leg-press-0.jpg" alt="Leg Press start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/leg-press-1.jpg" alt="Leg Press end"></div>
+    </div>
+    <div class="muscle-row"><div class="muscle-tags">
+      <span class="muscle-tag primary">Quads</span>
+      <span class="muscle-tag primary">Glutes</span>
+      <span class="muscle-tag secondary">Hamstrings</span>
+    </div></div>
+    <div class="exercise-where">Machine park — leg press station</div>
+    <div class="exercise-note">Sit in the leg press, feet shoulder-width on the platform. Lower the weight until knees are at ~90 degrees. Push through your heels back to start. Don't lock your knees at the top. Start light — add plates next week.</div>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 2: Lat Pulldown -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 2 of 8</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Lat Pulldown</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>10</strong> reps</span>
+      <span class="stat"><strong>60s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/lat-pulldown-0.jpg" alt="Lat Pulldown start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/lat-pulldown-1.jpg" alt="Lat Pulldown end"></div>
+    </div>
+    <div class="muscle-row"><div class="muscle-tags">
+      <span class="muscle-tag primary">Lats (Back)</span>
+      <span class="muscle-tag secondary">Biceps</span>
+      <span class="muscle-tag secondary">Shoulders</span>
+    </div></div>
+    <div class="exercise-where">Cable machine area — lat pulldown station with wide bar</div>
+    <div class="exercise-note">Sit down, thighs under the pad. Grab the wide bar with overhand grip, wider than shoulder-width. Pull the bar down to your upper chest — lead with your elbows. Squeeze your shoulder blades together at the bottom. Slowly let it back up. Don't lean back too far.</div>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 3: Romanian Deadlift -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 3 of 8</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Dumbbell Romanian Deadlift</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>10</strong> reps</span>
+      <span class="stat"><strong>60s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/romanian-deadlift-0.jpg" alt="Romanian Deadlift start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/romanian-deadlift-1.jpg" alt="Romanian Deadlift end"></div>
+    </div>
+    <div class="muscle-row"><div class="muscle-tags">
+      <span class="muscle-tag primary">Hamstrings</span>
+      <span class="muscle-tag primary">Glutes</span>
+      <span class="muscle-tag secondary">Lower Back</span>
+    </div></div>
+    <div class="exercise-where">Free weights area — dumbbells + stand in front of mirror for form check</div>
+    <div class="exercise-note">Stand holding dumbbells in front of your thighs. Slight bend in knees — keep them there. Hinge at your hips, pushing your butt back. Lower the dumbbells along your legs until you feel a stretch in your hamstrings (roughly mid-shin). Squeeze your glutes to come back up. Keep your back flat the entire time — watch in the mirror.</div>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 4: Seated Cable Row -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 4 of 8</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Seated Cable Row</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>12</strong> reps</span>
+      <span class="stat"><strong>60s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/cable-row-0.jpg" alt="Cable Row start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/cable-row-1.jpg" alt="Cable Row end"></div>
+    </div>
+    <div class="muscle-row"><div class="muscle-tags">
+      <span class="muscle-tag primary">Mid Back</span>
+      <span class="muscle-tag primary">Lats</span>
+      <span class="muscle-tag secondary">Biceps</span>
+    </div></div>
+    <div class="exercise-where">Cable station — low pulley with V-bar or straight bar attachment</div>
+    <div class="exercise-note">Sit on the seat, feet on the platform, knees slightly bent. Grab the handle. Pull it to your belly button — lead with your elbows. Squeeze your shoulder blades together. Slowly release forward. Keep your torso upright — don't rock back and forth.</div>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 5: Leg Curl -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 5 of 8</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Leg Curl</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>12</strong> reps</span>
+      <span class="stat"><strong>45s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/leg-curl-0.jpg" alt="Leg Curl start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/leg-curl-1.jpg" alt="Leg Curl end"></div>
+    </div>
+    <div class="muscle-row"><div class="muscle-tags">
+      <span class="muscle-tag primary">Hamstrings</span>
+    </div></div>
+    <div class="exercise-where">Machine park — lying or seated leg curl machine</div>
+    <div class="exercise-note">Lie face down (or sit, depending on machine). Pad rests behind your ankles. Curl your legs up by bending at the knees. Squeeze at the top. Lower slowly (2 seconds down) — the slow negative builds more muscle. Don't jerk the weight.</div>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 6: Bicep Curl -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 6 of 8</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Dumbbell Bicep Curl</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>12</strong> reps</span>
+      <span class="stat"><strong>45s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/bicep-curl-0.jpg" alt="Bicep Curl start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/bicep-curl-1.jpg" alt="Bicep Curl end"></div>
+    </div>
+    <div class="muscle-row"><div class="muscle-tags">
+      <span class="muscle-tag primary">Biceps</span>
+      <span class="muscle-tag secondary">Forearms</span>
+    </div></div>
+    <div class="exercise-where">Free weights area — light dumbbells (start 8-10 kg each)</div>
+    <div class="exercise-note">Stand with dumbbells at your sides, palms facing forward. Curl the weights up by bending at the elbow only — upper arms don't move. Squeeze at the top. Lower slowly. No swinging your body. Stand in front of the mirror to check form.</div>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)">Mark Done</button>
+  </div>
+</div>
+
+<!-- GRIP PROTOCOL -->
+<div class="section-title">Grip Strength Protocol</div>
+
+<!-- EXERCISE 7: Grip Crush -->
+<div class="exercise-card grip" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 7 of 8 — Grip Builder</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Grip Crush</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>15</strong> reps</span>
+      <span class="stat"><strong>30s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/farmer-walk-0.jpg" alt="Grip reference"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/farmer-walk-1.jpg" alt="Grip reference"></div>
+    </div>
+    <div class="muscle-row"><div class="muscle-tags">
+      <span class="muscle-tag primary">Forearms</span>
+      <span class="muscle-tag primary">Grip</span>
+    </div></div>
+    <div class="exercise-where">Free weights area — use a kettlebell (Sundbyberg has them) or weight plate</div>
+    <div class="exercise-note">Option A: Pinch grip a weight plate — hold it between your thumb and fingers, squeeze for 3 seconds, release. Repeat 15 times each hand. Option B: Grip a kettlebell by its ball (not the handle) and hold for 10 seconds. Both brutally target grip. Your NEKO grip was 40 kg — this fixes that.</div>
+    <button class="mark-done-btn grip-btn" onclick="event.stopPropagation(); markDone(this)">Mark Done</button>
+  </div>
+</div>
+
+<!-- EXERCISE 8: Calf Raises -->
+<div class="exercise-card" onclick="toggleCard(this)">
+  <div class="card-header">
+    <div class="exercise-num">Exercise 8 of 8</div>
+    <div class="exercise-name-row">
+      <span class="exercise-name">Standing Calf Raises</span>
+      <span class="done-badge">DONE</span>
+    </div>
+    <div class="exercise-stats">
+      <span class="stat"><strong>3</strong> sets</span>
+      <span class="stat"><strong>15</strong> reps</span>
+      <span class="stat"><strong>30s</strong> rest</span>
+    </div>
+    <div class="tap-hint">Tap to see how to do it</div>
+  </div>
+  <div class="card-detail">
+    <div class="exercise-img-container">
+      <div class="exercise-anim"><img class="frame-0" src="https://alimpolat.github.io/Make-My-Life-Structured/img/calf-raise-0.jpg" alt="Calf Raise start"><img class="frame-1" src="https://alimpolat.github.io/Make-My-Life-Structured/img/calf-raise-1.jpg" alt="Calf Raise end"></div>
+    </div>
+    <div class="muscle-row"><div class="muscle-tags">
+      <span class="muscle-tag primary">Calves</span>
+    </div></div>
+    <div class="exercise-where">Machine park (standing calf raise machine) or any step/platform edge</div>
+    <div class="exercise-note">Stand on a step with your heels hanging off the edge. Rise up on your toes as high as you can — squeeze at the top for 1 second. Lower slowly until you feel a deep stretch in your calves. Full range of motion is key. Hold the wall or machine for balance.</div>
+    <button class="mark-done-btn" onclick="event.stopPropagation(); markDone(this)">Mark Done</button>
+  </div>
+</div>
+
+<!-- COOL DOWN -->
+<div class="section-title">Cool Down — 5 min</div>
+<div class="exercise-card cooldown">
+  <div class="card-header"><div class="exercise-name">Cool Down Stretches</div></div>
+  <div class="card-detail">
+    <ul class="checklist">
+      <li>2 min easy walk on treadmill</li>
+      <li>Quad stretch — 30s each leg (pull foot to butt)</li>
+      <li>Hamstring stretch — 30s each leg (foot on bench, lean forward)</li>
+      <li>Hip flexor stretch — 30s each side (lunge position, push hips forward)</li>
+      <li>Dead hang — 20s (bonus grip + spine decompression)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="marcus-says">
+  <div class="name">Coach Marcus</div>
+  <p>Monday was push. Today is pull. Your body is learning both sides of the equation. Find that pull-up bar today — ask the staff. Dead hangs are your secret weapon for grip strength. Sauna after if you want. You earned it.</p>
+</div>
+
+<div style="height:20px"></div>
+
+<button class="timer-btn" id="timerBtn" onclick="handleTimer()">Rest Timer — Tap to Start</button>
+
+<script>
+let timerInterval = null;
+let seconds = 0;
+function handleTimer() {
+  const btn = document.getElementById('timerBtn');
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    btn.textContent = 'Rest Timer — Tap to Start';
+    btn.className = 'timer-btn';
+    return;
+  }
+  seconds = 60;
+  btn.className = 'timer-btn resting';
+  btn.textContent = seconds + 's — resting...';
+  timerInterval = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      btn.textContent = 'GO! Next set — tap to reset';
+      btn.className = 'timer-btn go';
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+    } else {
+      btn.textContent = seconds + 's — resting...';
+    }
+  }, 1000);
+}
+function toggleCard(card) {
+  const detail = card.querySelector('.card-detail');
+  if (detail) detail.classList.toggle('collapsed');
+}
+function markDone(btn) {
+  const card = btn.closest('.exercise-card');
+  card.classList.toggle('done');
+  if (card.classList.contains('done')) {
+    btn.textContent = 'Undo';
+    const detail = card.querySelector('.card-detail');
+    if (detail) detail.classList.add('collapsed');
+  } else {
+    btn.textContent = 'Mark Done';
+  }
+}
+</script>
+</body>
+</html>
